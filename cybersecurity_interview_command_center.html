@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cybersecurity Interview Command Center</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#05070d;--panel:#0d111b;--panel2:#111827;--line:#20293a;
+  --text:#f5f7fb;--muted:#8e9ab0;--purple:#7c5cff;--cyan:#00d4ff;
+  --green:#42e695;--orange:#ffb454;--red:#ff5577;
+}
+body{
+  min-height:100vh;background:
+  radial-gradient(circle at 10% 0%,rgba(124,92,255,.18),transparent 28%),
+  radial-gradient(circle at 100% 100%,rgba(0,212,255,.12),transparent 30%),var(--bg);
+  color:var(--text);font-family:Inter,Segoe UI,system-ui,sans-serif;
+}
+.container{width:min(1450px,94%);margin:auto;padding:28px 0 50px}
+header{padding:28px 0 24px}
+.badge{display:inline-block;border:1px solid #40366f;background:#15112d;color:#bdb3ff;padding:7px 13px;border-radius:30px;font-size:11px;font-weight:800;letter-spacing:1.2px}
+h1{font-size:clamp(34px,5vw,62px);line-height:1.02;margin-top:16px;letter-spacing:-2.5px}
+h1 span{background:linear-gradient(90deg,#fff,#aa9cff,#66eaff);-webkit-background-clip:text;background-clip:text;color:transparent}
+.subtitle{color:var(--muted);margin-top:12px;max-width:800px}
+.topbar{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center;margin:18px 0}
+.search{width:100%;background:#0b0f18;border:1px solid var(--line);color:#fff;padding:15px 17px;border-radius:14px;outline:none;font-size:14px}
+.search:focus{border-color:#5c50a5;box-shadow:0 0 0 3px rgba(124,92,255,.1)}
+.btn{border:1px solid var(--line);background:#111827;color:#dfe5f1;padding:14px 16px;border-radius:13px;cursor:pointer;font-weight:700}
+.btn:hover{border-color:#554a96}
+.layout{display:grid;grid-template-columns:260px 1fr;gap:20px}
+.sidebar,.maincard,.stat,.question{background:rgba(13,17,27,.82);border:1px solid var(--line);border-radius:18px}
+.sidebar{padding:14px;position:sticky;top:15px;height:max-content}
+.cat{width:100%;text-align:left;background:transparent;border:1px solid transparent;color:#aab5c8;padding:11px 12px;border-radius:10px;cursor:pointer;margin:3px 0;font-size:13px}
+.cat:hover,.cat.active{background:#17132d;border-color:#30275c;color:#fff}
+.count{float:right;color:#66728a}
+.maincard{padding:20px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+.stat{padding:16px}
+.stat b{display:block;font-size:25px}.stat small{color:var(--muted)}
+.progress{height:7px;background:#171d29;border-radius:20px;overflow:hidden;margin-top:10px}
+.progress>i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--purple),var(--cyan));border-radius:20px}
+.category-title{display:flex;justify-content:space-between;gap:15px;align-items:end;margin:5px 0 16px}
+.category-title h2{font-size:25px}.category-title p{color:var(--muted);font-size:13px}
+.question{margin:10px 0;overflow:hidden}
+.qhead{display:flex;gap:12px;align-items:flex-start;padding:15px;cursor:pointer}
+.qnum{min-width:30px;height:30px;border-radius:9px;display:grid;place-items:center;background:#171d2a;color:#9ea9bc;font-size:11px;font-weight:800}
+.qtitle{flex:1;font-weight:750;font-size:14px;line-height:1.45}
+.qarrow{color:#64718a}
+.qbody{display:none;border-top:1px solid var(--line);padding:16px 18px 18px;color:#bdc7d8;font-size:13px;line-height:1.7;background:#0a0e16}
+.question.open .qbody{display:block}.question.open .qarrow{transform:rotate(180deg)}
+.answer-title{color:#fff;font-weight:800;margin-bottom:7px}
+.qbody ul{padding-left:20px}.qbody li{margin:3px 0}
+.qbody code{background:#161d2a;padding:2px 5px;border-radius:5px;color:#9feeff}
+.tags{margin-top:11px;display:flex;flex-wrap:wrap;gap:6px}
+.tag{font-size:10px;padding:4px 7px;border-radius:20px;background:#161d2a;color:#8996ad;border:1px solid #252e40}
+.check{display:flex;align-items:center;gap:9px;margin-top:12px;color:#8e9ab0;font-size:12px}
+.check input{accent-color:var(--green)}
+.empty{padding:45px;text-align:center;color:var(--muted)}
+footer{text-align:center;color:#566176;font-size:11px;margin-top:28px}
+@media(max-width:900px){.layout{grid-template-columns:1fr}.sidebar{position:static}.stats{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.topbar{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr}.container{width:92%}}
+
+/* ===== Resignation Countdown ===== */
+.countdown-wrap{
+  margin:18px 0 22px;
+  padding:22px;
+  border:1px solid #292f43;
+  border-radius:20px;
+  background:
+    radial-gradient(circle at 0% 0%,rgba(124,92,255,.18),transparent 35%),
+    radial-gradient(circle at 100% 100%,rgba(0,212,255,.12),transparent 35%),
+    #0a0e17;
+  box-shadow:0 18px 50px rgba(0,0,0,.25);
+}
+.countdown-top{display:flex;justify-content:space-between;gap:15px;align-items:center;flex-wrap:wrap}
+.countdown-label{color:#8e9ab0;font-size:11px;font-weight:800;letter-spacing:1.4px;text-transform:uppercase}
+.countdown-date{color:#fff;font-weight:800;font-size:15px}
+.countdown-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:16px}
+.timebox{
+  padding:16px 10px;text-align:center;border:1px solid #242c3d;border-radius:15px;
+  background:rgba(17,24,39,.72)
+}
+.timebox b{display:block;font-size:clamp(27px,4vw,42px);line-height:1;background:linear-gradient(180deg,#fff,#9c8cff);
+  -webkit-background-clip:text;background-clip:text;color:transparent}
+.timebox span{display:block;color:#7f8aa0;font-size:10px;font-weight:800;letter-spacing:1px;margin-top:7px;text-transform:uppercase}
+.live-clock{margin-top:12px;color:#7f8aa0;font-size:12px}
+.live-clock strong{color:#dfe6f5}
+@media(max-width:600px){.countdown-grid{grid-template-columns:repeat(2,1fr)}}
+
+</style>
+</head>
+<body>
+<div class="container">
+<header>
+  <span class="badge">CYBERSECURITY INTERVIEW COMMAND CENTER</span>
+  <h1><span>Interview Prep Dashboard</span></h1>
+  <p class="subtitle">Web • API • Mobile • Banking & Payments • Red Teaming • Active Directory • Source Code • Security Fundamentals • HR</p>
+</header>
+
+<div class="countdown-wrap">
+  <div class="countdown-top">
+    <div>
+      <div class="countdown-label">Resignation Countdown</div>
+      <div class="countdown-date">Target Date: 15 January 2027</div>
+    </div>
+    <div class="countdown-label">Live • Auto-updating</div>
+  </div>
+  <div class="countdown-grid">
+    <div class="timebox"><b id="cdDays">0</b><span>Days</span></div>
+    <div class="timebox"><b id="cdHours">00</b><span>Hours</span></div>
+    <div class="timebox"><b id="cdMinutes">00</b><span>Minutes</span></div>
+    <div class="timebox"><b id="cdSeconds">00</b><span>Seconds</span></div>
+  </div>
+  <div class="live-clock">Current local time: <strong id="liveClock">--</strong></div>
+</div>
+
+
+<div class="topbar">
+  <input id="search" class="search" placeholder="Search questions, e.g. JWT, BOLA, SSL pinning, SSRF, payment, Android...">
+  <button class="btn" onclick="resetAll()">Reset Progress</button>
+</div>
+
+<div class="layout">
+  <aside class="sidebar" id="sidebar"></aside>
+
+  <main class="maincard">
+    <div class="stats">
+      <div class="stat"><b id="total">0</b><small>Total Questions</small></div>
+      <div class="stat"><b id="done">0</b><small>Prepared</small></div>
+      <div class="stat"><b id="remaining">0</b><small>Remaining</small></div>
+      <div class="stat"><b id="pct">0%</b><small>Overall Progress</small><div class="progress"><i id="bar"></i></div></div>
+    </div>
+    <div id="content"></div>
+  </main>
+</div>
+
+<footer>Resignation date: 15 January 2027 • Countdown updates every second • Interview progress and prepared-question counter are saved automatically in your browser.</footer>
+</div>
+
+<script>
+const bank = [
+{
+name:"💳 Banking & Payment Security",desc:"Financial applications, payment APIs and transaction business logic",
+qs:[
+["Payment Aggregator vs Payment Gateway","A gateway primarily provides the technology layer for securely communicating payment information and authorization. A payment aggregator provides merchants access to multiple payment methods and commonly handles onboarding, processing, settlement and integration."],
+["Explain a gray-box VAPT flow for a card payment API","Understand architecture, API documentation, test credentials, roles and payment flow. Map registration/login, payment endpoints, order/amount/currency/reference IDs, authentication, authorization, business logic, replay, duplicate transactions, race conditions and server-side payment-status validation."],
+["What business-logic tests would you perform on POST /api/checkout?","Test amount manipulation, zero/negative/decimal values, order-ID changes, currency changes, replay, duplicate processing, payment-status manipulation and concurrent requests. Verify the server recalculates and validates trusted order/payment data."],
+["How would you test amount manipulation in a payment API?","Change the client-supplied amount and verify whether the backend independently obtains the authoritative order amount rather than trusting the request."],
+["How would you test order manipulation / BOLA in a payment API?","Change an order identifier to another valid identifier and verify that ownership and authorization are enforced server-side."],
+["How would you test currency manipulation?","Change INR to another currency and verify the backend validates currency against the original order/payment context."],
+["How would you test replay and duplicate transactions?","Replay a captured authorized request and check idempotency, transaction state and whether a second charge/order state change can occur."],
+["How would you test payment-status manipulation?","Never trust a client value such as status=success. Verify that the backend derives final status from trusted transaction state/provider verification."],
+["How would you test race conditions in a checkout flow?","Send concurrent requests in an authorized test environment and check whether locking/idempotency prevents duplicate charges or inconsistent order state."],
+["What is the most important security principle for payment APIs?","Never trust client-controlled payment values. Validate order, amount, currency, authorization and final payment status against trusted backend/payment-provider state."],
+["What vulnerabilities have you found in financial applications?","Discuss authorized findings such as business-logic flaws, access-control issues, critical injection/RCE or security misconfigurations, focusing on evidence, impact, remediation and responsible disclosure."],
+["What test cases would you perform on a banking login page?","Authentication, username/email enumeration, rate limiting, brute-force protection, MFA/OTP, session management, password policy, CSRF where applicable, error handling, TLS, security headers, remember-me, lockout, reset flow, cookie flags and business logic."],
+["What security issues are especially important in banking applications?","Authorization, transaction integrity, session security, MFA/OTP, rate limiting, business logic, sensitive-data exposure, secure payment state transitions, logging/monitoring and strong transport security."]
+]},
+{
+name:"🌐 Web Application Security",desc:"OWASP-style web VAPT and common interview scenarios",
+qs:[
+["What is your general approach to web application testing?","Recon → authentication → authorization → input validation → business logic → session/security controls → reporting and remediation verification."],
+["What are the three types of XSS?","Stored XSS is persisted; reflected XSS is returned in a response; DOM XSS occurs when client-side code processes attacker-controlled data unsafely."],
+["How do you test for DOM XSS?","Identify sources such as location.search/hash, referrer and postMessage and dangerous sinks such as innerHTML, document.write and eval. Trace source-to-sink data flow and verify safe behavior."],
+["Self-XSS vs reflected XSS?","Self-XSS normally requires the victim to manually execute/paste content. Reflected XSS can be delivered through a crafted request and reflected by the application. Context and impact determine severity."],
+["Would you report Self-XSS in a banking application?","Document it and assess whether it is standalone or chainable. If it requires manual execution and has no meaningful chain, it may be low/informational depending on the methodology."],
+["How do you rate XSS as Low, Medium or High?","Consider exploitability, victim interaction, affected users, privileges, persistence, sensitive actions/data and chaining. Do not rate from the vulnerability name alone."],
+["What are five XSS mitigations?","Context-aware output encoding; server-side validation; safe DOM APIs such as textContent; restrictive CSP; and secure cookie attributes such as HttpOnly/Secure/SameSite."],
+["What is CSP unsafe-inline and unsafe-eval?","unsafe-inline permits inline script/style behavior and weakens CSP's XSS protection; unsafe-eval permits string-to-code evaluation. Prefer nonces/hashes and avoid unsafe-eval where possible."],
+["What security response headers do you check?","CSP, HSTS, X-Content-Type-Options, Referrer-Policy, Permissions-Policy and modern framing controls such as CSP frame-ancestors. Also inspect cookie security attributes."],
+["What is clickjacking and how do you mitigate it?","An attacker frames a page and tricks a victim into clicking hidden UI. Use CSP frame-ancestors and, where needed for legacy compatibility, X-Frame-Options."],
+["What is SSRF and how do you test it?","SSRF occurs when server-side functionality can be induced to make unintended outbound requests. Test controlled endpoints and safe internal-resource scenarios within scope; validate allowlists, redirects, DNS behavior and response handling."],
+["What is the difference between SSRF and CSRF?","SSRF abuses the server as the requester; CSRF abuses a victim browser's authenticated session to perform an unwanted action."],
+["What is LFI vs directory traversal?","LFI causes application-side inclusion/read of local resources through unsafe file handling; traversal is path manipulation to access files outside an intended directory. The exact impact depends on implementation."],
+["What is LFI vs RFI?","LFI references local resources; RFI references remote attacker-controlled resources where the platform supports remote inclusion."],
+["What is second-order SQL injection?","The payload is stored first and becomes dangerous later when another operation uses the stored value in an unsafe SQL query."],
+["What is blind SQL injection?","The application does not directly expose query output; inference can be made through boolean/content differences or controlled timing behavior."],
+["What is time-based SQL injection?","A controlled delay can be used to infer whether a condition was processed, when the database and application context permit it. Test safely and avoid disruptive delays."],
+["How do parameterized queries prevent SQL injection?","They separate SQL structure from data values, so user input is bound as data instead of being interpreted as SQL syntax."],
+["What is NoSQL injection?","Unsafe construction of NoSQL queries from untrusted input can allow attackers to alter query logic or operators. Use strict schemas and safe query construction."],
+["What is CSRF?","A cross-site request forgery causes a victim browser to send an unwanted authenticated request to a target application. Common defenses include anti-CSRF tokens, SameSite cookies and origin checks."],
+["Can CSRF happen over GET?","Yes, if GET causes a state-changing operation and the application lacks appropriate protections. State-changing operations should generally use appropriate non-GET methods and CSRF defenses."],
+["Does traditional authenticated CSRF require the victim to be logged in?","Generally yes for an authenticated action that relies on the victim's session credentials, although unauthenticated state-changing actions can have other CSRF-like risks."],
+["Can CSRF be performed against an API?","Yes, depending on authentication. Cookie-authenticated APIs are commonly relevant; bearer-token APIs in headers have different browser-origin constraints. Test the actual authentication model."],
+["How do you test CORS?","Determine allowed origins, credential behavior, preflight handling and whether sensitive responses are exposed cross-origin. Never equate permissive CORS with a vulnerability without demonstrating security impact."],
+["If SameSite=Lax is present, can CSRF still be possible?","SameSite=Lax reduces many cross-site cookie-sending cases but does not guarantee safety. Test the exact request method, navigation context, other authentication mechanisms and application behavior."],
+["What is Host Header Injection?","It occurs when an application trusts an unvalidated Host header for security-sensitive behavior such as URL generation, routing or password-reset links."],
+["How can Host Header Injection affect password reset?","If reset URLs are constructed from an attacker-controlled Host value, a victim may receive a reset link pointing to an attacker-controlled domain. Use a trusted canonical origin and validate allowed hosts."],
+["What is request smuggling?","An HTTP request-smuggling issue can arise when front-end and back-end components parse request boundaries differently, potentially enabling request desynchronization or unintended request routing."],
+["What is request splitting?","Response/request splitting involves attacker-controlled data introducing protocol delimiters such as CRLF into headers or messages. Strict validation and correct encoding prevent header injection."],
+["Web cache poisoning vs web cache deception?","Poisoning causes a cache to store an attacker-influenced response for other users; deception tricks caching behavior into storing/retrieving sensitive private content. Severity depends on demonstrated impact."],
+["What is data integrity in API security?","The application must ensure security-sensitive data and state transitions cannot be altered by unauthorized clients. Example: accepting client-controlled payment status or role fields without trusted server validation."],
+["What is insufficient logging?","Security-relevant events are not logged adequately or logs lack useful context/retention/monitoring. Mitigate with centralized, tamper-resistant logging, appropriate event coverage and alerting."],
+["What is improper asset management?","Unknown, obsolete, forgotten or undocumented endpoints, applications, versions or environments remain exposed. Maintain an authoritative asset inventory and lifecycle controls."],
+["What is improper platform usage in mobile security?","Using platform capabilities insecurely, such as weak storage, unsafe WebView configuration, exported components without authorization or inappropriate cryptography."],
+["What is a zero-day attack?","An attack exploiting a vulnerability before an effective patch or public defensive knowledge is broadly available. Detection and mitigation focus on behavior, isolation, compensating controls and rapid vendor coordination."]
+]},
+{
+name:"🔌 API Security",desc:"API discovery, OWASP API risks, authorization and business logic",
+qs:[
+["What approach do you follow for API security testing?","API discovery → authentication → authorization/BOLA/BFLA → input validation → rate limiting → data exposure → business logic → error handling → logging and reporting."],
+["How do you perform API testing using Postman, cURL and Burp Suite?","Use Postman for structured collections and workflows, cURL for direct reproducible requests, and Burp for interception, Repeater, controlled automation and request/response comparison."],
+["What is BOLA vs BFLA?","BOLA is broken authorization over an object/resource identifier; BFLA is broken authorization over a function or endpoint, such as a normal user invoking an admin-only operation."],
+["What is BOPLA?","Broken Object Property Level Authorization concerns improper authorization at individual object properties/fields, such as accepting unauthorized role or internal fields."],
+["What is Mass Assignment?","When user-controlled fields are automatically bound to internal objects, allowing modification of unintended properties such as role or isAdmin."],
+["What are API OWASP Top 10 areas you should know?","API authorization failures, authentication failures, object/property-level authorization, unrestricted resource consumption, function-level authorization, sensitive business flows, SSRF, misconfiguration, inventory/asset issues and unsafe consumption of APIs."],
+["How do you mitigate XSS/SQLi/injection in APIs?","Use strict schemas, context-aware output encoding where data is rendered, parameterized queries, safe parsers, allowlists, type validation, centralized validation and least privilege."],
+["How do you test file upload functionality in an API?","Test extension/MIME/content validation, size limits, filename handling, storage location, authorization, malware scanning where appropriate, decompression risks and whether uploaded content can be interpreted or executed unexpectedly."],
+["What is API rate limiting?","A control that limits requests based on user, token, IP or other context to reduce abuse and resource exhaustion. Test limits and whether sensitive endpoints have appropriate controls."],
+["What is API data exposure?","An API returns more fields or sensitive information than the client actually needs. Apply response schemas, field-level authorization and data minimization."],
+["How do you test authentication in APIs?","Test credential handling, token validation, expiry, refresh, MFA where relevant, session/token revocation, brute-force controls and authentication bypass paths."],
+["How do you test authorization in APIs?","Test horizontal access between users/objects and vertical access to higher-privileged functions, including alternate HTTP methods, hidden endpoints and direct API calls."],
+["What is an API security misconfiguration?","Examples include verbose errors, debug endpoints, weak CORS, unsafe HTTP methods, missing security headers where relevant, exposed documentation or weak TLS/configuration. Validate actual impact."]
+]},
+{
+name:"🔐 Authentication • JWT • Sessions",desc:"Identity, tokens, cookies, OTP and password-reset security",
+qs:[
+["Authentication vs Authorization?","Authentication answers 'who are you?'; authorization determines what an authenticated identity is allowed to access or perform."],
+["Explain JWT structure and purpose","JWT commonly has Header.Payload.Signature. Claims may include sub, iss, aud, exp and iat. The signature provides integrity/authenticity; a normal signed JWT is not confidential."],
+["What JWT security test cases do you perform?","Algorithm enforcement, signature validation, token modification, expiry, claim validation, audience/issuer checks, secret/key strength, revocation/reuse and key-management configuration."],
+["RS256 vs HS256?","HS256 uses a shared symmetric secret; RS256 uses an asymmetric private/public key pair. The verifier and key-management model differ."],
+["What is the 'none' algorithm issue?","A vulnerable implementation may incorrectly accept unsigned tokens. Correct libraries/configuration must enforce an approved algorithm and verify the signature."],
+["How do you test JWT claim manipulation?","Modify security-sensitive claims such as role/scope/sub and verify the server rejects tampered tokens because the signature no longer validates."],
+["What are secure OTP recommendations?","Short expiry, one-time use, server-side verification, rate limiting, attempt limits, secure generation, replay prevention, careful error messages, protected delivery channels and monitoring."],
+["What test cases would you perform on a forgot-password flow?","Account enumeration, token randomness, expiry, single-use, invalidation after use, host-header influence, rate limiting, session handling, token leakage and whether reset changes invalidate previous sessions as appropriate."],
+["What cookie attributes do you check?","Secure, HttpOnly and SameSite; also scope/path, expiration and whether sensitive cookies are unnecessarily broad."],
+["What is session fixation?","An attacker causes a victim to use a known session identifier and the application fails to rotate it after authentication. Mitigate by regenerating session IDs on privilege changes/login."],
+["What is privilege escalation?","Vertical escalation moves to higher privilege; horizontal escalation accesses another peer's resources. It can occur through role/function/object authorization flaws."]
+]},
+{
+name:"📱 Mobile / Android Security",desc:"APK, AndroidManifest, WebView, deep links, SSL pinning and runtime testing",
+qs:[
+["What is your approach when given an APK?","Recon → static analysis → dynamic analysis → network testing → storage/components → runtime protections → reporting."],
+["What is the difference between native and Flutter APKs?","Native Android commonly uses Java/Kotlin and Android components. Flutter uses Dart plus the Flutter engine; application logic may be present in native libraries such as libapp.so."],
+["What is JADX?","A decompiler used to inspect Android DEX/APK code in a readable form for reverse engineering and security analysis."],
+["What do you check in AndroidManifest.xml?","debuggable, allowBackup, cleartext traffic, exported activities/services/receivers/providers, permissions, deep-link intent filters, SDK levels and network-security configuration."],
+["Is android:exported=true automatically a vulnerability?","No. Risk depends on what the component exposes and whether sensitive operations enforce authorization."],
+["What exploit classes can an exported Android component introduce?","Unauthorized invocation of sensitive activities/services/providers/receivers, data exposure or privileged actions if the component lacks appropriate permission and input validation."],
+["What is a deep link?","A URL or custom URI that opens application functionality. Security issues can arise from trusting attacker-controlled parameters, exposing sensitive activities or failing to validate associated domains."],
+["What is a custom URI scheme?","An application-defined scheme such as mybank://... used to route links into an app. Test collision, parameter validation, authentication state and sensitive actions."],
+["What is WebView and what do you test?","A WebView renders web content inside an app. Test JavaScript settings, URL validation, native bridges, file access, mixed content, SSL handling and untrusted content flows."],
+["How do you test XSS in Android?","Identify WebViews/HTML rendering, trace attacker-controlled inputs and use harmless test payloads to determine whether script execution is possible."],
+["What is static vs dynamic mobile analysis?","Static analyzes the APK/IPA and code/resources without executing it; dynamic observes behavior at runtime through devices/emulators, network interception, logs and instrumentation."],
+["What tools have you used for Android testing?","JADX, APKTool, MobSF, Frida, adb, Burp Suite and Ghidra where native libraries require deeper analysis."],
+["How do you analyze SSL pinning?","Identify the pinning implementation, test normal MITM behavior, determine whether pinning is enforced, and in an authorized assessment use appropriate instrumentation to understand/bypass it for traffic analysis."],
+["What are common SSL pinning implementations?","OkHttp/certificate pinning, TrustManager/custom validation, Network Security Config and native certificate-validation logic."],
+["How do you check whether a device is rooted?","Look for common root indicators and runtime behavior, and assess whether the application detects them. Validate both rooted and non-rooted baselines."],
+["How can an application detect Frida/hooking?","It may inspect processes, ports, loaded libraries, memory/runtime artifacts, debugger state or integrity signals. The exact detection is implementation-specific."],
+["What are common mobile runtime protections?","Root/jailbreak detection, emulator detection, debugger/hooking detection, SSL pinning, tamper/integrity checks, screenshot protection, app attestation and anti-logging."],
+["Where can sensitive data be stored in Android?","SharedPreferences, SQLite/databases, files, external storage, caches, logs, WebView storage and key/value stores. Inspect whether secrets are protected appropriately."],
+["What should you check in iOS Info.plist?","Bundle identifier, URL schemes, App Transport Security settings, permission descriptions, background modes and file-sharing related settings."],
+["What is Flutter security testing different about?","Inspect Dart/native artifacts, Flutter assets and native libraries, API/network behavior and platform bridges; combine static and runtime testing."],
+["Have you rooted a physical device?","Answer truthfully in an interview. If yes, explain the authorized lab workflow and what you learned; if no, discuss emulators/lab devices and the testing methodology instead."],
+["What mobile build types are useful for a security assessment?","Black-box release, gray-box/staging, normal dynamic, SSL-bypass testing, rooted/bypass testing, internal/dev and instrumentation builds. The exact set depends on scope."],
+["What mobile protections should be tested?","Root/jailbreak, emulator, debugger, Frida/hooking, SSL pinning, tamper/integrity, screenshot protection, certificate pinning, app attestation and sensitive logging. Your mobile cheat sheet also organizes these by Android/iOS build scenario."] 
+]},
+{
+name:"🎯 Red Teaming & Active Directory",desc:"CRTP-style offensive security interview topics",
+qs:[
+["What is red teaming?","An authorized adversary simulation designed to evaluate preventive, detective and response capabilities against realistic attack paths."],
+["What is an attack chain?","A sequence such as reconnaissance → initial access → execution → persistence/privilege escalation → credential access → lateral movement → objective, mapped to the engagement scope and ATT&CK where useful."],
+["What is initial access?","The stage where an authorized red-team operator obtains an initial foothold through an approved attack path, such as exposed services, valid credentials or a controlled phishing scenario."],
+["What is privilege escalation?","Moving from a lower-privileged context to a higher-privileged one. In AD, analyze permissions, group membership, delegation, service accounts and attack paths."],
+["What is lateral movement?","Moving between systems or identities after initial access to reach an objective, using authorized techniques and controlled credentials/tokens."],
+["What is persistence?","Maintaining access across sessions/reboots. In a professional engagement, persistence should be explicitly authorized and carefully controlled."],
+["What is Kerberoasting?","An AD technique involving service-ticket material for service accounts that may be susceptible to offline password guessing. Defenses include strong service-account passwords, managed service accounts and monitoring."],
+["What is Kerberos?","A ticket-based authentication protocol used heavily in Windows/Active Directory environments."],
+["What is BloodHound used for?","Graph-based analysis of AD relationships and attack paths, such as group membership, permissions and delegation."],
+["What are ACLs/ACEs in Active Directory?","Access control lists contain access control entries defining who can perform which actions on an object."],
+["What is delegation in Active Directory?","Mechanisms that allow identities/services to act on behalf of others. Misconfigured delegation can create privilege-escalation paths."],
+["What is LDAP?","A directory-access protocol commonly used with Active Directory. Secure configurations use appropriate encryption, authentication and least-privilege access."],
+["What is PowerShell's role in security testing?","It is a native Windows automation/scripting environment widely used for administration and authorized security assessment. Interview answers should distinguish legitimate testing from malicious use."],
+["What is MITRE ATT&CK?","A knowledge base of adversary tactics and techniques used to describe, map and improve detection and defensive coverage."],
+["What is EDR evasion?","Attempts to avoid security detection. In interviews, explain it at a conceptual level and emphasize authorized lab testing, telemetry and defensive lessons."],
+["What are post-exploitation goals?","Validate the agreed objective, privilege boundaries, data access, lateral movement paths and defensive detection without unnecessary impact."],
+["What is command and control?","A mechanism by which an operator communicates with an authorized test implant or agent. Discuss architecture and detection considerations rather than deploying uncontrolled infrastructure."],
+["What is DNS rebinding?","A technique that changes DNS resolution over time to interact with resources under different network contexts; it is relevant to browser/server trust-boundary testing."],
+["What is Mimikatz?","A Windows credential/security research tool frequently referenced in red-team training. Discuss the security concepts and defensive controls rather than using it against unauthorized systems."],
+["What is RDP security testing?","Assess exposure, authentication, MFA, network-level authentication, authorization, patching, logging and segmentation within scope."]
+]},
+{
+name:"🛡️ Security Misconfiguration • TLS • Headers",desc:"Configuration review, transport security and defensive controls",
+qs:[
+["What security misconfiguration test cases do you perform?","Check debug mode, verbose errors, default credentials, exposed admin/debug endpoints, directory listing, unsafe methods, CORS, headers, TLS, storage permissions, cloud/service configuration and unnecessary exposure."],
+["How do you check TLS/SSL vulnerabilities?","Enumerate supported protocol versions/ciphers, certificate validity/chain, hostname validation, weak algorithms, renegotiation/configuration issues and HSTS. Validate findings with a TLS scanner and manual confirmation."],
+["Does TLS 1.2 have security risk?","TLS 1.2 is not inherently insecure. Risk depends on the cipher suites, authentication, configuration and implementation. Prefer modern strong configurations and support current protocol versions where appropriate."],
+["What is a strong SSL/TLS cipher suite?","A modern authenticated-encryption suite using strong algorithms and forward secrecy, subject to the server/client compatibility requirements. Avoid obsolete protocols and weak algorithms."],
+["How would you exploit a TLS vulnerability?","In an authorized test, demonstrate the security consequence using controlled traffic/configuration evidence, such as negotiating a weak protocol/cipher or showing certificate-validation weakness. Avoid disruptive exploitation."],
+["What is HSTS?","HTTP Strict Transport Security instructs browsers to use HTTPS for a site and helps prevent downgrade/SSL-stripping scenarios."],
+["What is X-Content-Type-Options: nosniff?","It tells browsers not to MIME-sniff certain responses, reducing content-type confusion risks."],
+["What is Referrer-Policy?","Controls how much referrer information is sent in requests, helping reduce URL/data leakage."],
+["What is Permissions-Policy?","Controls access to selected browser capabilities such as camera, microphone and geolocation."],
+["How do you rate a security misconfiguration?","Use the organization's risk methodology and consider exploitability, exposure, affected assets/users, confidentiality/integrity/availability impact and compensating controls."]
+]},
+{
+name:"💻 Source Code Review / SAST",desc:"Manual review and automated static analysis",
+qs:[
+["What source-code review experience should you discuss?","Explain how you combine automated SAST with manual review, tracing data flow and validating exploitability rather than blindly accepting scanner results."],
+["What tools can be used for source-code review?","Fortify, Checkmarx, Semgrep and manual review are examples. Tool choice depends on language and organizational workflow."],
+["How do you perform a SAST scan using SonarQube or Checkmarx?","Configure the project and language, run the scanner in the approved pipeline, triage findings, trace source-to-sink manually, remove false positives and prioritize exploitable issues."],
+["What vulnerabilities can source-code review identify?","Injection, authentication/authorization flaws, insecure cryptography, secrets, unsafe file handling, SSRF, deserialization, insecure APIs and business-logic weaknesses."],
+["How do you validate a SQL injection finding from SAST?","Trace source → validation/processing → database sink, inspect query construction and confirm whether parameterization or safe APIs break the exploit path."],
+["How do you review secrets in source code?","Search for hardcoded credentials/API keys/tokens, inspect configuration and secret-management patterns, and determine whether exposed secrets are active and privileged."],
+["What should be recommended for SQL injection?","Parameterized queries/prepared statements, safe ORM/query APIs, input validation and least-privileged database accounts."]
+]},
+{
+name:"📤 File Upload & RCE",desc:"Upload validation, storage and execution risks",
+qs:[
+["What file-upload test cases do you perform?","Extension validation, MIME/content validation, magic bytes, filename normalization, size limits, archive/decompression handling, authorization, storage location, overwrite behavior and execution behavior."],
+["Can XSS be tested through file uploads?","Yes, depending on how uploaded content is served/rendered. Test relevant formats and content-disposition/content-type behavior using harmless payloads."],
+["What are common file-upload validation weaknesses?","Extension-only validation, trusting MIME type, weak content validation, unsafe filename handling, executable storage locations and parser vulnerabilities."],
+["What is the key issue in an upload-to-RCE finding?","The critical security impact comes from attacker-controlled content being interpreted/executed by the server or a vulnerable processing component, not merely from the ability to upload a file."],
+["How do you mitigate file-upload vulnerabilities?","Allowlist required formats, validate content server-side, normalize names, generate storage names, store outside executable web roots where possible, enforce authorization/size limits, scan content and disable execution of uploaded content."],
+["How do you explain an RCE via file upload in an interview?","Describe the authorized test flow, validation weakness, controlled proof of execution, impact and remediation without presenting it as a recipe for attacking arbitrary systems."]
+]},
+{
+name:"🧪 Advanced Web / Infrastructure",desc:"Advanced interview concepts and protocol-level issues",
+qs:[
+["What is HTTP request smuggling?","A parser discrepancy between HTTP components can allow request-boundary desynchronization. Assess front-end/back-end parsing consistency and use safe lab validation."],
+["What is cache poisoning?","Causing a shared cache to store attacker-influenced content that is later served to other users."],
+["What is cache deception?","Causing sensitive/private responses to be cached or made retrievable through cache-key/path confusion."],
+["What is DNS rebinding?","A DNS technique that can change the resolved address over time, potentially crossing trust boundaries in vulnerable applications."],
+["What is LDAP security risk?","Weak access controls or insecure transport can expose directory information or enable unauthorized operations. Use encryption, least privilege and auditing."],
+["What is a zero-day?","A vulnerability exploited before defenders have an effective patch or broadly available remediation. Treat claims carefully and distinguish unknown vulnerabilities from publicly known ones."]
+]},
+{
+name:"🧠 Interview Fundamentals",desc:"Core concepts frequently asked in VAPT/Application Security interviews",
+qs:[
+["Hashing vs Encryption vs Encoding?","Hashing is a one-way integrity/password primitive; encryption provides confidentiality using a key; encoding changes representation for transport/storage and is reversible without a secret."],
+["Authentication vs Authorization?","Authentication verifies identity; authorization decides permitted actions/resources."],
+["Horizontal vs Vertical Privilege Escalation?","Horizontal accesses another user's peer-level resources; vertical reaches higher privilege/functionality."],
+["What is IDOR?","Insecure Direct Object Reference is an access-control flaw where manipulating an object reference exposes another unauthorized object. Modern API terminology often calls this BOLA."],
+["What is BOLA?","Broken Object Level Authorization: the server fails to verify that the requester is authorized for the referenced object."],
+["What is BFLA?","Broken Function Level Authorization: a lower-privileged user can invoke functionality intended for a higher privilege."],
+["What is BOPLA?","Broken Object Property Level Authorization: the application fails to enforce authorization on individual object properties/fields."],
+["What is Mass Assignment?","Automatic binding of request fields to internal models lets clients change fields they should not control."],
+["What is second-order vulnerability behavior?","Input is stored safely enough to pass the first operation but becomes dangerous when later processed by another vulnerable sink."]
+]},
+{
+name:"🎤 HR • Project • Experience",desc:"Questions to answer from your actual experience",
+qs:[
+["Tell me about yourself.","Give a concise 60–90 second summary: application security/VAPT focus, web/mobile/API experience, practical certifications, major outcomes and the type of role you want."],
+["Explain your current/most recent role.","Cover scope, client-facing work, assessments performed, reporting, remediation validation and collaboration with development/business teams."],
+["What was the major vulnerability you found in the last year?","Use a real authorized finding. Explain vulnerability → validation → impact → remediation → verification. Avoid overstating severity."],
+["What is the best/critical vulnerability you have found?","A strong example can be a validated server-side file-upload-to-RCE finding if that reflects your actual experience. Explain the controlled proof and business impact."],
+["Have you applied CRTP knowledge in a real-world red-team engagement?","Answer truthfully. If yes, map the lab concepts to authorized engagement activities; if not, explain how CRTP strengthened your AD methodology without claiming production use."],
+["How do you keep yourself updated with cybersecurity?","Mention labs, vendor advisories, OWASP, ATT&CK, responsible disclosure write-ups, technical research and hands-on practice."],
+["How do you communicate a critical finding to a client?","State the business impact clearly, provide evidence and affected scope, give actionable remediation, agree on retest criteria and avoid unnecessary jargon."],
+["Why are you looking for a change?","Keep it professional: growth, broader security exposure, stronger engineering/security culture, challenging assessments and career progression."],
+["How do you handle a false positive from a scanner?","Reproduce it, trace the data flow/configuration, document why it is not exploitable, tune the rule if appropriate and keep evidence for auditability."],
+["How do you rate vulnerabilities?","Use the organization's approved methodology, typically considering exploitability, impact, affected population, privileges, user interaction, business criticality and compensating controls. CVSS can support technical severity but does not replace business context."]
+]},
+{
+name:"⚡ Quick Revision Questions",desc:"Rapid-fire questions to practice verbally",
+qs:[
+["File upload: can XSS happen?","Yes, if uploaded content is rendered in a browser context or dangerous file types are served unsafely."],
+["What is SSRF?","Server-side request forgery: attacker-controlled input causes unintended server-side outbound requests."],
+["What is CSRF?","Cross-site request forgery: an authenticated browser is induced to make an unwanted action."],
+["What is SQL injection?","Untrusted input alters SQL query semantics because application code constructs database queries unsafely."],
+["What is NoSQL injection?","Untrusted input changes NoSQL query/operator semantics through unsafe query construction."],
+["What is RCE?","Remote Code Execution: an attacker can cause code/commands to execute on a remote system."],
+["What is CSP?","Content Security Policy controls allowed resource/script behavior in browsers and provides defense in depth against XSS."],
+["What is SSL pinning?","A mobile application validates that the server certificate/key matches a trusted pinned value, reducing MITM risk."],
+["What is Frida?","A dynamic instrumentation framework used to observe or modify application behavior at runtime in authorized testing."],
+["What is JADX?","Android DEX/APK decompiler used for source-like code inspection."],
+["What is MobSF?","A mobile security testing framework supporting static and dynamic analysis."],
+["What is Burp Suite?","A web security testing platform for intercepting, modifying and analyzing HTTP(S) traffic and testing application behavior."],
+["What is CVSS?","A standardized framework for expressing technical vulnerability severity; business context can affect the final organizational risk rating."],
+["What is OWASP?","A nonprofit community and project ecosystem focused on application and API security guidance, tools and education."]
+]}
+];
+
+const stateKey="cyberInterviewPreparedV2";
+let prepared=JSON.parse(localStorage.getItem(stateKey)||"{}");
+let active=0;
+
+function allQuestions(){
+  return bank.flatMap((c,ci)=>c.qs.map((q,qi)=>({ci,qi,key:`${ci}-${qi}`,...{q:q[0],a:q[1]}})));
+}
+const all=allQuestions();
+
+function renderSidebar(){
+  const s=document.getElementById("sidebar");
+  s.innerHTML=bank.map((c,i)=>`
+    <button class="cat ${i===active?'active':''}" onclick="selectCat(${i})">
+      ${c.name}<span class="count">${c.qs.length}</span>
+    </button>`).join("");
+}
+
+function render(){
+  renderSidebar();
+  const term=document.getElementById("search").value.toLowerCase().trim();
+  let cats=bank.map((c,ci)=>({...c,ci,qs:c.qs.map((q,qi)=>({...q,ci,qi,key:`${ci}-${qi}`}))}));
+  if(!term) cats=cats.filter(c=>c.ci===active);
+  else cats=cats.map(c=>({...c,qs:c.qs.filter(q=>(q[0]+" "+q[1]).toLowerCase().includes(term))})).filter(c=>c.qs.length);
+
+  const content=document.getElementById("content");
+  if(!cats.length){content.innerHTML='<div class="empty">No matching questions found.</div>';updateStats();return}
+  content.innerHTML=cats.map(c=>`
+    <section>
+      <div class="category-title">
+        <div><h2>${c.name}</h2><p>${c.desc}</p></div>
+        <p>${c.qs.length} questions</p>
+      </div>
+      ${c.qs.map((q,i)=>`
+        <article class="question" id="q-${q.key}">
+          <div class="qhead" onclick="toggleQ('${q.key}')">
+            <div class="qnum">${i+1}</div>
+            <div class="qtitle">${q[0]}</div>
+            <div class="qarrow">⌄</div>
+          </div>
+          <div class="qbody">
+            <div class="answer-title">Quick interview answer / points</div>
+            <div>${formatAnswer(q[1])}</div>
+            <label class="check">
+              <input type="checkbox" ${prepared[q.key]?'checked':''} onchange="mark('${q.key}',this.checked)">
+              I can answer this confidently
+            </label>
+          </div>
+        </article>`).join("")}
+    </section>`).join("");
+  updateStats();
+}
+
+function formatAnswer(s){
+  return s.split(/(?<=[.!?])\s+(?=[A-Z0-9])/).map(x=>`<div style="margin:4px 0">${escapeHtml(x)}</div>`).join("");
+}
+function escapeHtml(s){return s.replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+function toggleQ(key){document.getElementById("q-"+key).classList.toggle("open")}
+function mark(key,val){prepared[key]=val;localStorage.setItem(stateKey,JSON.stringify(prepared));updateStats()}
+function selectCat(i){active=i;document.getElementById("search").value="";render()}
+function updateStats(){
+  const total=all.length;
+  const done=all.filter(x=>prepared[x.key]).length;
+  document.getElementById("total").textContent=total;
+  document.getElementById("done").textContent=done;
+  document.getElementById("remaining").textContent=total-done;
+  const p=total?Math.round(done/total*100):0;
+  document.getElementById("pct").textContent=p+"%";
+  document.getElementById("bar").style.width=p+"%";
+}
+function resetAll(){
+  if(confirm("Reset all interview preparation progress?")){
+    prepared={};localStorage.removeItem(stateKey);render();
+  }
+}
+document.getElementById("search").addEventListener("input",render);
+render();
+
+// ===== Resignation Countdown: 15 January 2027 =====
+const resignationDate = new Date("2027-01-15T00:00:00");
+
+function pad2(n){ return String(n).padStart(2,"0"); }
+
+function updateCountdown(){
+  const now = new Date();
+  let diff = resignationDate - now;
+
+  const clock = document.getElementById("liveClock");
+  if(clock){
+    clock.textContent = now.toLocaleString([], {
+      weekday:"short", year:"numeric", month:"short", day:"2-digit",
+      hour:"2-digit", minute:"2-digit", second:"2-digit"
+    });
+  }
+
+  if(diff <= 0){
+    document.getElementById("cdDays").textContent = "0";
+    document.getElementById("cdHours").textContent = "00";
+    document.getElementById("cdMinutes").textContent = "00";
+    document.getElementById("cdSeconds").textContent = "00";
+    return;
+  }
+
+  const totalSeconds = Math.floor(diff / 1000);
+  const days = Math.floor(totalSeconds / 86400);
+  const hours = Math.floor((totalSeconds % 86400) / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+
+  document.getElementById("cdDays").textContent = days;
+  document.getElementById("cdHours").textContent = pad2(hours);
+  document.getElementById("cdMinutes").textContent = pad2(minutes);
+  document.getElementById("cdSeconds").textContent = pad2(seconds);
+}
+
+updateCountdown();
+setInterval(updateCountdown, 1000);
+
+</script>
+</body>
+</html>
