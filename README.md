@@ -175,3 +175,45 @@ IDE → Pre-commit → PR (Policy-as-Code) → CI (Scan + Test) → Plan Review 
 ---
 
 *Good luck — you know the tech. Now own the narrative.*
+
+
+🎯 API Security
+#	Scenario
+1	You’re reviewing a fintech REST API. GET /api/v1/transactions/{id} only checks user.isAuthenticated() — no ownership validation. Walk me through: how you confirm exploitability, demonstrate impact to the client, and remediate (immediate + systemic).
+2	A developer says: “We use JWT, so it’s secure.” You decode a token and see "alg": "none" and "jku": "https://attacker.com/jwks.json". Explain the vulnerabilities and how you’d fix the validation logic.
+3	GraphQL endpoint allows batched queries with arbitrary depth. A single request can enumerate the entire schema and cause DoS. How do you secure it?
+4	Two applications (Admin Portal + Mobile App) share the same backend API. How do you test for cross-tenant data leakage, token scope issues, and shared rate-limiting abuse?
+📱 Mobile Security (Android/iOS)
+#	Scenario
+5	APK decompile reveals: API key in strings.xml, session tokens in plaintext SharedPreferences, allowBackup="true", no cert pinning. Dev says: “ProGuard + Play Store = secure.” Your response and findings report structure.
+6	An exported Activity (android:exported="true") accepts arbitrary Intent extras and performs a sensitive action. How does a malicious app exploit this? Mitigation?
+7	Implicit Intent used for internal navigation. Malicious app registers same action with higher priority. Attack flow and fix?
+8	iOS app has NSAppTransportSecurity allowing arbitrary loads + no certificate pinning. You intercept traffic with Burp + custom CA. Business risk and remediation.
+🏗️ Architecture Review / Threat Modeling
+#	Scenario
+9	Team presents: API Gateway → Order Service → Payment Service → Notification Service (async Kafka). Shared PostgreSQL (separate schemas). Secrets in K8s ConfigMaps. No mTLS, no service mesh. You have 30 min. Top 5 questions + critical risks.
+10	Third-party SaaS integration requests admin scope for a read-only webhook. Vendor provides SOC2 but no pen test. Your vendor assessment process.
+11	Event-driven system: services emit unsigned Kafka events. How do you prevent event injection, replay, and spoofing?
+🔍 Secure Code Review / DevSecOps
+#	Scenario
+12	PR: Spring Boot file upload uses file.getOriginalFilename() directly in Files.copy(). List every issue, prioritize top 3, write the PR comment.
+13	SAST pipeline reports 500 findings. How do you triage, suppress false positives, and create a sustainable fix cadence?
+14	CI detects hardcoded AWS keys in a merged commit. Immediate actions + systemic fix.
+15	Java deserialization in legacy code: ObjectInputStream.readObject() on user-supplied byte array. Exploit chain and fix.
+🌐 Web App Security
+#	Scenario
+16	Search endpoint reflects input inside <h1>Hello</h1>. Payloads that work here? Escalation from alert(1) to account takeover?
+17	Hidden field price=100 in checkout form. Tester changes to price=1. Dev says “frontend validation exists.” Your response.
+18	PDF generation: user-controlled name rendered in PDF template. Vectors: XSS via PDF.js, LaTeX injection, XXE in parser. Mitigations.
+19	Blind SSRF in webhook URL parameter. No outbound response. Escalation path to cloud metadata, internal port scan, RCE.
+20	Request smuggling suspected on nginx → Java backend. CL.TE vs TE.CL detection and mitigation.
+21	CRLF injection in Location header via redirect?url=user_input. Cache poisoning + response splitting demo.
+🔐 Crypto / Identity
+#	Scenario
+22	JWT uses "jku": "https://attacker.com/jwks.json" and "kid": "test-key". Explain JKU/JKID injection and key confusion. Secure validator design.
+23	Certificate Authority compromise (like DigiNotar). How does CA trust chain work? What fails when root is compromised?
+23	Bind shell vs reverse shell in post-exploitation. Real-world chain: RCE → shell → persistence → lateral movement → cloud metadata.
+🚨 Incident Response / Judgment
+#	Scenario
+24	Friday 4:45 PM: Critical RCE (CVE) in transitive dependency of public auth service. Release in 2 hours. Walk me through your 60-minute decision process and stakeholder communication.
+25	Critical vuln found in production Saturday 2 AM. No on-call dev. Your playbook.
